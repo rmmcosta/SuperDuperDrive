@@ -9,16 +9,16 @@
 </head>
 <body class="text-center">
 <main class="form-signin w-100 m-auto">
-    <form>
+    <form method="post" th:action="@{/login}" th:object="${user}">
         <img class="mb-4" th:src="@{~/images/cloud-storage.svg}" alt="" width="125" height="99">
         <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
         <div class="form-floating">
-            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-            <label for="floatingInput">Email address</label>
+            <input type="text" class="form-control" id="floatingInput" placeholder="username" th:field="*{username}">
+            <label for="floatingInput">Username</label>
         </div>
         <div class="form-floating">
-            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+            <input type="password" class="form-control" id="floatingPassword" placeholder="Password" th:field="*{password}">
             <label for="floatingPassword">Password</label>
         </div>
 
@@ -32,5 +32,7 @@
         <p class="mt-5 mb-3 text-muted">&copy; TheSoftWebArchitect - 2022</p>
     </form>
 </main>
+<script th:src="@{~/js/bootstrap.bundle.min.js}" defer></script>
+</body>
 </body>
 </html>

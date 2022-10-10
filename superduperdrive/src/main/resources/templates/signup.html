@@ -14,11 +14,11 @@
             <img class="d-block mx-auto mb-4" th:src="@{~/images/cloud-storage.svg}" alt="" width="125" height="99">
             <h2>SignUp form</h2>
         </div>
-        <form class="needs-validation mb-3" novalidate>
+        <form class="needs-validation mb-3" method="post" th:action="@{/signup}" th:object="${user}" novalidate>
             <div class="row g-3">
                 <div class="col-sm-6">
                     <label for="firstName" class="form-label">First name</label>
-                    <input type="text" class="form-control" id="firstName" placeholder="" value="" required>
+                    <input type="text" class="form-control" id="firstName" placeholder="" value="" th:field="*{fName}" required>
                     <div class="invalid-feedback">
                         Valid first name is required.
                     </div>
@@ -26,7 +26,7 @@
 
                 <div class="col-sm-6">
                     <label for="lastName" class="form-label">Last name</label>
-                    <input type="text" class="form-control" id="lastName" placeholder="" value="" required>
+                    <input type="text" class="form-control" id="lastName" placeholder="" value="" th:field="*{lName}" required>
                     <div class="invalid-feedback">
                         Valid last name is required.
                     </div>
@@ -36,7 +36,7 @@
                     <label for="username" class="form-label">Username</label>
                     <div class="input-group has-validation">
                         <span class="input-group-text">@</span>
-                        <input type="text" class="form-control" id="username" placeholder="Username" required>
+                        <input type="text" class="form-control" id="username" placeholder="Username" th:field="*{username}" required>
                         <div class="invalid-feedback">
                             Your username is required.
                         </div>
@@ -47,7 +47,7 @@
                     <label for="password" class="form-label">Password</label>
                     <div class="input-group has-validation">
                         <span class="input-group-text">#</span>
-                        <input type="text" class="form-control" id="password" placeholder="Password" required>
+                        <input type="text" class="form-control" id="password" placeholder="Password" th:field="*{password}" required>
                         <div class="invalid-feedback">
                             Your password is required.
                         </div>
@@ -68,5 +68,6 @@
         </ul>
     </footer>
 </div>
+<script th:src="@{~/js/bootstrap.bundle.min.js}" defer></script>
 </body>
 </html>
