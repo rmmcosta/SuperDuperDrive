@@ -30,6 +30,8 @@ public class SecurityConfig {
                 .permitAll();
         httpSecurity.formLogin()
                 .defaultSuccessUrl("/home", true);
+        httpSecurity.csrf().disable();
+        httpSecurity.headers().frameOptions().disable();
         return httpSecurity.build();
     }
 }

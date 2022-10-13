@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS files (
   file_id INTEGER NOT NULL AUTO_INCREMENT,
   file_name varchar(50) NOT NULL,
-  file_binary binary NOT NULL,
+  file_binary BLOB NOT NULL,
   PRIMARY KEY (file_id)
 );
 

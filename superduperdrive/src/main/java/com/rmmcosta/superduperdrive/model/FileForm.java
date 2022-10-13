@@ -3,8 +3,7 @@ package com.rmmcosta.superduperdrive.model;
 import lombok.Data;
 
 @Data
-public class File {
-    private Integer fileId;
+public class FileForm {
     private String fileName;
-    private byte[] fileBinary;
+    private Byte[] fileBinary;
 }

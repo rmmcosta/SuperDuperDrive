@@ -12,6 +12,6 @@ public interface UserMapper {
     User getUser(String username);
 
     @Insert("INSERT INTO users (username, salt, password, f_name, l_name) values(#{username}, #{salt}, #{password}, #{fName}, #{lName})")
-    @Options(useGeneratedKeys = true, keyProperty = "user_id")
+    @Options(useGeneratedKeys = true, keyProperty = "userId")
     int insertUser(User user);
 }

@@ -5,9 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class SuperduperdriveApplicationTests {
-
 	@Test
 	void contextLoads() {
 	}
-
 }
