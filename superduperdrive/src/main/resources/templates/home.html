@@ -21,19 +21,23 @@
     </header>
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <button class="nav-link"  th:classappend="${tabActive}=='Files' ? 'active' : ''" id="nav-files-tab" data-bs-toggle="tab" data-bs-target="#nav-files"
+            <button class="nav-link" th:classappend="${tabActive}=='Files' ? 'active' : ''" id="nav-files-tab"
+                    data-bs-toggle="tab" data-bs-target="#nav-files"
                     type="button" role="tab" aria-controls="nav-files" aria-selected="true">Files
             </button>
-            <button class="nav-link" th:classappend="${tabActive}=='Notes' ? 'active' : ''" id="nav-notes-tab" data-bs-toggle="tab" data-bs-target="#nav-notes" type="button"
+            <button class="nav-link" th:classappend="${tabActive}=='Notes' ? 'active' : ''" id="nav-notes-tab"
+                    data-bs-toggle="tab" data-bs-target="#nav-notes" type="button"
                     role="tab" aria-controls="nav-notes" aria-selected="false">Notes
             </button>
-            <button class="nav-link" th:classappend="${tabActive}=='Credentials' ? 'active' : ''" id="nav-credentials-tab" data-bs-toggle="tab" data-bs-target="#nav-credentials"
+            <button class="nav-link" th:classappend="${tabActive}=='Credentials' ? 'active' : ''"
+                    id="nav-credentials-tab" data-bs-toggle="tab" data-bs-target="#nav-credentials"
                     type="button" role="tab" aria-controls="nav-credentials" aria-selected="false">Credentials
             </button>
         </div>
     </nav>
     <div class="tab-content" id="nav-tabContent">
-        <div class="tab-pane fade" th:classappend="${tabActive}=='Files' ? 'show active' : ''" id="nav-files" role="tabpanel" aria-labelledby="nav-files-tab"
+        <div class="tab-pane fade" th:classappend="${tabActive}=='Files' ? 'show active' : ''" id="nav-files"
+             role="tabpanel" aria-labelledby="nav-files-tab"
              tabindex="0">
             <form th:action="@{/uploadFile}" method="post" enctype="multipart/form-data">
                 <div class="mt-3 mb-3 text-end">
@@ -44,32 +48,43 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th scope="col"></th>
                     <th scope="col">File Name</th>
+                    <th scope="col"></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="file : ${fileList}">
-                    <th scope="row">
-                        <form action="#" th:action="@{/downloadFile}" method="post">
-                            <input type="hidden" th:value="${file.fileId}" name="file-list-view-id"
-                                   id="file-list-view-id">
-                            <input class="btn btn-success" type="submit" id="file-list-view" name="file-list-view"
-                                   value="View">
-                        </form>
-                        <form action="#" th:action="@{/deleteFile}" method="post">
-                            <input type="hidden" th:value="${file.fileId}" name="file-list-delete-id"
-                                   id="file-list-delete-id">
-                            <input class="btn btn-danger" type="submit" id="file-list-delete" name="file-list-delete"
-                                   value="Delete">
-                        </form>
-                    </th>
                     <td id="file-list-name" th:text="${file.fileName}">MyBestPic.png</td>
+                    <th scope="row">
+                        <div class="container d-flex justify-content-end">
+                            <div class="row">
+                                <div class="col-sm-auto">
+                                    <form action="#" th:action="@{/downloadFile}" method="post">
+                                        <input type="hidden" th:value="${file.fileId}" name="file-list-view-id"
+                                               id="file-list-view-id">
+                                        <input class="btn btn-success" type="submit" id="file-list-view"
+                                               name="file-list-view"
+                                               value="View">
+                                    </form>
+                                </div>
+                                <div class="col-sm-auto">
+                                    <form action="#" th:action="@{/deleteFile}" method="post">
+                                        <input type="hidden" th:value="${file.fileId}" name="file-list-delete-id"
+                                               id="file-list-delete-id">
+                                        <input class="btn btn-danger" type="submit" id="file-list-delete"
+                                               name="file-list-delete"
+                                               value="Delete">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </th>
                 </tr>
                 </tbody>
             </table>
         </div>
-        <div class="tab-pane fade" th:classappend="${tabActive}=='Notes' ? 'show active' : ''" id="nav-notes" role="tabpanel" aria-labelledby="nav-notes-tab" tabindex="0">
+        <div class="tab-pane fade" th:classappend="${tabActive}=='Notes' ? 'show active' : ''" id="nav-notes"
+             role="tabpanel" aria-labelledby="nav-notes-tab" tabindex="0">
             <div class="text-end">
                 <button type="button" class="btn btn-primary mt-3 mb-3" data-bs-toggle="modal"
                         data-bs-target="#notesModal" id="note-new" name="note-new">
@@ -79,34 +94,45 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th scope="col"></th>
                     <th scope="col">Title</th>
                     <th scope="col">Description</th>
+                    <th scope="col"></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="note : ${noteList}">
-                    <th scope="row">
-                        <form action="#" th:action="@{/editNote}" method="post">
-                            <input type="hidden" th:value="${note.noteId}" name="note-list-edit-id"
-                                   id="note-list-edit-id">
-                            <input class="btn btn-success" type="submit" id="note-list-edit" name="note-list-edit"
-                                   value="Edit">
-                        </form>
-                        <form action="#" th:action="@{/deleteNote}" method="post">
-                            <input type="hidden" th:value="${note.noteId}" name="note-list-delete-id"
-                                   id="note-list-delete-id">
-                            <input class="btn btn-danger" type="submit" id="note-list-delete" name="note-list-delete"
-                                   value="Delete">
-                        </form>
-                    </th>
                     <td id="note-list-title" th:text="${note.title}">The Title</td>
                     <td id="note-list-description" th:text="${note.description}">A great description.</td>
+                    <th scope="row">
+                        <div class="container d-flex justify-content-end">
+                            <div class="row">
+                                <div class="col-sm-auto">
+                                    <form action="#" th:action="@{/editNote}" method="post">
+                                        <input type="hidden" th:value="${note.noteId}" name="note-list-edit-id"
+                                               id="note-list-edit-id">
+                                        <input class="btn btn-success" type="submit" id="note-list-edit"
+                                               name="note-list-edit"
+                                               value="Edit">
+                                    </form>
+                                </div>
+                                <div class="col-sm-auto">
+                                    <form action="#" th:action="@{/deleteNote}" method="post">
+                                        <input type="hidden" th:value="${note.noteId}" name="note-list-delete-id"
+                                               id="note-list-delete-id">
+                                        <input class="btn btn-danger" type="submit" id="note-list-delete"
+                                               name="note-list-delete"
+                                               value="Delete">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </th>
                 </tr>
                 </tbody>
             </table>
         </div>
-        <div class="tab-pane fade" th:classappend="${tabActive}=='Credentials' ? 'show active' : ''"  id="nav-credentials" role="tabpanel" aria-labelledby="nav-credentials-tab"
+        <div class="tab-pane fade" th:classappend="${tabActive}=='Credentials' ? 'show active' : ''"
+             id="nav-credentials" role="tabpanel" aria-labelledby="nav-credentials-tab"
              tabindex="0">
             <div class="text-end">
                 <button type="button" class="btn btn-primary mt-3 mb-3" data-bs-toggle="modal"
@@ -117,32 +143,42 @@
             <table class="table table-striped" th:object="${credentialList}">
                 <thead>
                 <tr>
-                    <th scope="col"></th>
                     <th scope="col">URL</th>
                     <th scope="col">Username</th>
                     <th scope="col">Password</th>
+                    <th scope="col"></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="credential : ${credentialList}">
-                    <th scope="row">
-                        <!-- Button trigger modal -->
-                        <form action="#" th:action="@{/editCredential}" method="post">
-                            <input type="hidden" th:value="${credential.credentialId}" name="credential-list-edit-id"
-                                   id="credential-list-edit-id">
-                            <input class="btn btn-success" type="submit" id="credential-list-edit"
-                                   name="credential-list-edit" value="Edit">
-                        </form>
-                        <form action="#" th:action="@{/deleteCredential}" method="post">
-                            <input type="hidden" th:value="${credential.credentialId}" name="credential-list-delete-id"
-                                   id="credential-list-delete-id">
-                            <input class="btn btn-danger" type="submit" id="credential-list-delete"
-                                   name="credential-list-delete" value="Delete">
-                        </form>
-                    </th>
                     <td id="credential-list-url" th:text="${credential.url}">http://localhost:8080/login</td>
                     <td id="credential-list-username" th:text="${credential.username}">rmmcosta</td>
                     <td id="credential-list-password" th:text="${credential.password}">7FRGNTHTJDFJASKJ3784374==</td>
+                    <th scope="row">
+                        <div class="container d-flex justify-content-end">
+                            <div class="row">
+                                <div class="col-sm-auto">
+                                    <!-- Button trigger modal -->
+                                    <form action="#" th:action="@{/editCredential}" method="post">
+                                        <input type="hidden" th:value="${credential.credentialId}"
+                                               name="credential-list-edit-id"
+                                               id="credential-list-edit-id">
+                                        <input class="btn btn-success" type="submit" id="credential-list-edit"
+                                               name="credential-list-edit" value="Edit">
+                                    </form>
+                                </div>
+                                <div class="col-sm-auto">
+                                    <form action="#" th:action="@{/deleteCredential}" method="post">
+                                        <input type="hidden" th:value="${credential.credentialId}"
+                                               name="credential-list-delete-id"
+                                               id="credential-list-delete-id">
+                                        <input class="btn btn-danger" type="submit" id="credential-list-delete"
+                                               name="credential-list-delete" value="Delete">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </th>
                 </tr>
                 </tbody>
             </table>
@@ -150,10 +186,7 @@
     </div>
 </div>
 <!-- Notes Modal -->
-<div class="modal fade mt-5" th:classappend="${noteForm.noteId ne null} ? 'show':''" id="notesModal" tabindex="-1" aria-labelledby="notesModalLabel"
-     th:attr="aria-hidden=${noteForm.noteId ne null} ? 'false' : 'true', aria-modal=${noteForm.noteId ne null} ? 'true' : 'false', role=${noteForm.noteId ne null} ? 'dialog' : ''"
-     th:style="${noteForm.noteId ne null} ? 'display: block;' : ''"
->
+<div class="modal fade mt-5" id="notesModal" tabindex="-1" aria-labelledby="notesModalLabel">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -181,10 +214,7 @@
     </div>
 </div>
 <!-- Credentials Modal -->
-<div class="modal fade mt-5" th:classappend="${credentialForm.credentialId ne null} ? 'show':''" id="credentialsModal" tabindex="-1" aria-labelledby="credentialsModalLabel"
-     th:attr="aria-hidden=${credentialForm.credentialId ne null} ? 'false' : 'true', aria-modal=${credentialForm.credentialId ne null} ? 'true' : 'false', role=${credentialForm.credentialId ne null} ? 'dialog' : ''"
-     th:style="${credentialForm.credentialId ne null} ? 'display: block;' : ''"
->
+<div class="modal fade mt-5" id="credentialsModal" tabindex="-1" aria-labelledby="credentialsModalLabel">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
