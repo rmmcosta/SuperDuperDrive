@@ -36,14 +36,14 @@ public class FileServiceTests {
         }
         assertEquals(initCount + 1, fileService.getFileNames().size());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        java.io.File returnedFile = new java.io.File(System.getProperty("java.io.tmpdir"));
+        java.io.File returnedFile = new java.io.File(System.getProperty("java.io.tmpdir"),"dummy.tmp");
         try {
             out.write(fileService.getFileBinary(fileId));
             FileOutputStream fileOutputStream = new FileOutputStream(returnedFile);
             out.writeTo(fileOutputStream);
             assertTrue(Files.equal(binaryFile, returnedFile));
         } catch (IOException | SQLException e) {
-            fail();
+            fail(e.getMessage());
         }
         assertTrue(fileService.deleteFile(fileId));
         assertEquals(initCount, fileService.getFileNames().size());

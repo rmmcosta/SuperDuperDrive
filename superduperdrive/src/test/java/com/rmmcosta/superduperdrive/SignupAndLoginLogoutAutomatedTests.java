@@ -12,9 +12,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SignupAndLoginAutomatedTests {
+public class SignupAndLoginLogoutAutomatedTests {
     @LocalServerPort
     private Integer port;
 
@@ -23,8 +24,9 @@ public class SignupAndLoginAutomatedTests {
     private static WebDriver driver;
     private LoginPage loginPage;
     private SignupPage signupPage;
+    private HomePage homePage;
 
-    private static final String USERNAME = "rmmcosta";
+    private static final String USERNAME = "rmmcosta_test";
     private static final String PASSWORD = "12345";
     private static final String F_NAME = "Ricardo";
     private static final String L_NAME = "Costa";
@@ -48,26 +50,20 @@ public class SignupAndLoginAutomatedTests {
         driver.get(DOMAIN + port + "/home");
         loginPage = new LoginPage(driver);
         signupPage = new SignupPage(driver);
+        homePage = new HomePage(driver);
     }
 
     @Test
-    public void signupAndSuccessfulLogin() {
+    public void signupAndSuccessfulLoginAndSuccessfulLogout() {
         //signup
         loginPage.go2Signup();
         signupPage.doSignup(USERNAME, PASSWORD, F_NAME, L_NAME);
         //login
+        driver.get(DOMAIN + port + "/login");
         loginPage.doLogin(USERNAME, PASSWORD);
         assertEquals(DOMAIN+port+"/home", driver.getCurrentUrl());
-    }
-
-    @Test
-    public void successfulLogout() {
-        //signup
-        loginPage.go2Signup();
-        signupPage.doSignup(USERNAME, PASSWORD, F_NAME, L_NAME);
-        //login
-        loginPage.doLogin(USERNAME, PASSWORD);
-        assertEquals(DOMAIN+port+"/home", driver.getCurrentUrl());
-
+        homePage.doLogout();
+        driver.get(DOMAIN + port + "/home");
+        assertNotEquals(DOMAIN + port + "/home", driver.getCurrentUrl());
     }
 }

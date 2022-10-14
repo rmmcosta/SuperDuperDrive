@@ -46,13 +46,14 @@ public class CredentialsEnd2EndTests {
     public void initializePageObjects() {
         System.out.println("port: " + port);
         driver.get(DOMAIN + port + "/home");
-        if(!driver.getCurrentUrl().equals(DOMAIN + port + "/home")) {
+        if (!driver.getCurrentUrl().equals(DOMAIN + port + "/home")) {
             loginPage = new LoginPage(driver);
             signupPage = new SignupPage(driver);
             //signup
-            loginPage.go2Signup();
+            driver.get(DOMAIN + port + "/signup");
             signupPage.doSignup(USERNAME, PASSWORD, F_NAME, L_NAME);
             //login
+            driver.get(DOMAIN + port + "/login");
             loginPage.doLogin(USERNAME, PASSWORD);
         }
         homePage = new HomePage(driver);
@@ -60,7 +61,9 @@ public class CredentialsEnd2EndTests {
 
     @AfterEach
     public void terminateSession() {
-        homePage.doLogout();
+        driver.get(DOMAIN + port + "/home");
+        if (driver.getCurrentUrl().equals(DOMAIN + port + "/home"))
+            homePage.doLogout();
     }
 
     @Test
@@ -70,7 +73,7 @@ public class CredentialsEnd2EndTests {
         homePage.createCredential(URL, USERNAME, PASSWORD);
         assertEquals(initialCredentialsCount + 1, homePage.getCredentialsCount());
         boolean foundMatchingCredential;
-        foundMatchingCredential = homePage.getCredentials().stream().filter(credential -> credential.getUrl() == URL && credential.getUsername() == USERNAME).count() == 1;
+        foundMatchingCredential = homePage.getCredentials().stream().filter(credential -> credential.getUrl().equals(URL) && credential.getUsername().equals(USERNAME)).count() == 1;
         assertTrue(foundMatchingCredential);
         homePage.deleteCredential();
         assertEquals(initialCredentialsCount, homePage.getCredentialsCount());

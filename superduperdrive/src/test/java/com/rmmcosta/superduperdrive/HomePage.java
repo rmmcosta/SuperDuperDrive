@@ -8,6 +8,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -143,9 +144,10 @@ public class HomePage {
 
     public void createCredential(String url, String username, String password) {
         navCredentialsTab.click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(1));
+        wait.until(webDriver -> webDriver.findElement(By.id("credential-new")));
         credentialNew.click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(webDriver -> webDriver.findElement(By.id("credentialsModal")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-url")));
         credentialURL.clear();
         credentialURL.sendKeys(url);
         credentialUsername.clear();
@@ -163,7 +165,7 @@ public class HomePage {
         List<Credential> credentials = new ArrayList<>();
         Credential tempCredential = new Credential();
         for (int i = 0; i < credentialListUrl.size(); i++) {
-            tempCredential.setCredentialId(Integer.valueOf(credentialListId.get(i).getText()));
+            //tempCredential.setCredentialId(Integer.valueOf(credentialListId.get(i).getText()));
             tempCredential.setUrl(credentialListUrl.get(i).getText());
             tempCredential.setUsername(credentialListUsername.get(i).getText());
             tempCredential.setPassword(credentialListPassword.get(i).getText());

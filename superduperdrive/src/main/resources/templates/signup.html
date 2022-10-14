@@ -54,6 +54,12 @@
                     </div>
                 </div>
             </div>
+            <div th:if="${successSignup}" id="success-msg" class="alert alert-success mt-4">
+                You successfully signed up! Please continue to the <a th:href="@{/login}">login</a> page.
+            </div>
+            <div th:if="${errorMessage ne null}" class="alert alert-danger mt-4">
+                <span th:text="${errorMessage}">Example Signup Error Message</span>
+            </div>
             <button class="mt-4 w-100 btn btn-primary btn-lg" type="submit" id="signup">Sign Up</button>
         </form>
         <a href="#" th:href="@{/login}">Back to Login</a>

@@ -16,7 +16,7 @@
         </a>
 
         <div class="col-md-3 text-end">
-            <a href="#" class="nav-link link-primary" id="logout" th:href="@{/login?logout}"><strong>Logout</strong></a>
+            <a href="#" class="nav-link link-primary" id="logout" th:href="@{/logout}"><strong>Logout</strong></a>
         </div>
     </header>
     <nav>
@@ -54,6 +54,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="file : ${fileList}">
+                    <td class="d-none" id="file-list-id" th:text="${file.fileId}"></td>
                     <td id="file-list-name" th:text="${file.fileName}">MyBestPic.png</td>
                     <th scope="row">
                         <div class="container d-flex justify-content-end">
@@ -101,6 +102,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="note : ${noteList}">
+                    <td class="d-none" id="note-list-id" th:text="${note.noteId}"></td>
                     <td id="note-list-title" th:text="${note.title}">The Title</td>
                     <td id="note-list-description" th:text="${note.description}">A great description.</td>
                     <th scope="row">
@@ -151,6 +153,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="credential : ${credentialList}">
+                    <td class="d-none" id="credential-list-id" th:text="${credential.credentialId}">33</td>
                     <td id="credential-list-url" th:text="${credential.url}">http://localhost:8080/login</td>
                     <td id="credential-list-username" th:text="${credential.username}">rmmcosta</td>
                     <td id="credential-list-password" th:text="${credential.password}">7FRGNTHTJDFJASKJ3784374==</td>

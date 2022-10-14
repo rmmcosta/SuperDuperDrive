@@ -32,10 +32,17 @@ public class SignupController {
     public String getSignupPage(@ModelAttribute("user") SignupForm signupForm, Model model) {
         return "/signup";
     }
+
     @PostMapping
     public String doSignup(@ModelAttribute("user") SignupForm signupForm, Model model) {
         System.out.println("Create User");
-        userService.createUser(modelMapper.map(signupForm, User.class));
-        return "redirect:/login";
+        try {
+            userService.createUser(modelMapper.map(signupForm, User.class));
+            model.addAttribute("successSignup", true);
+            model.addAttribute("signupForm", new SignupForm());
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+        }
+        return "signup";
     }
 }

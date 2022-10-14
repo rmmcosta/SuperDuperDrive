@@ -15,7 +15,10 @@ public class UserService {
     @Autowired
     private HashService hashService;
 
-    public int createUser(User user) {
+    public int createUser(User user) throws RuntimeException {
+        User existingUser = getUser(user.getUsername());
+        if(existingUser!=null)
+            throw new RuntimeException("User already exists with that username!");
         SecureRandom secureRandom = new SecureRandom();
         byte[] salt = new byte[16];
         secureRandom.nextBytes(salt);
