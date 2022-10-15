@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SDD</title>
+    <title>Sign Up</title>
     <link rel="stylesheet" th:href="@{~/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{~/css/signup.css}">
 </head>
@@ -58,7 +58,7 @@
                 You successfully signed up! Please continue to the <a th:href="@{/login}">login</a> page.
             </div>
             <div th:if="${errorMessage ne null}" class="alert alert-danger mt-4">
-                <span th:text="${errorMessage}">Example Signup Error Message</span>
+                <span th:text="${errorMessage}" id="signup-error-message">Example Signup Error Message</span>
             </div>
             <button class="mt-4 w-100 btn btn-primary btn-lg" type="submit" id="signup">Sign Up</button>
         </form>
@@ -75,5 +75,6 @@
     </footer>
 </div>
 <script th:src="@{~/js/bootstrap.bundle.min.js}" defer></script>
+<script th:src="@{~/js/signup.js}" defer></script>
 </body>
 </html>

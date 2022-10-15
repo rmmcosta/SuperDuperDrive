@@ -1,13 +1,13 @@
 package com.rmmcosta.superduperdrive;
 
+import com.rmmcosta.superduperdrive.model.User;
+import com.rmmcosta.superduperdrive.service.UserService;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
@@ -20,6 +20,9 @@ public class SignupAndLoginLogoutAutomatedTests {
     private Integer port;
 
     private static final String DOMAIN = "http://localhost:";
+
+    @Autowired
+    private UserService userService;
 
     private static WebDriver driver;
     private LoginPage loginPage;
@@ -53,6 +56,11 @@ public class SignupAndLoginLogoutAutomatedTests {
         homePage = new HomePage(driver);
     }
 
+    @AfterEach
+    public void deleteUser() {
+        userService.deleteUser(USERNAME);
+    }
+
     @Test
     public void signupAndSuccessfulLoginAndSuccessfulLogout() {
         //signup
@@ -61,9 +69,18 @@ public class SignupAndLoginLogoutAutomatedTests {
         //login
         driver.get(DOMAIN + port + "/login");
         loginPage.doLogin(USERNAME, PASSWORD);
-        assertEquals(DOMAIN+port+"/home", driver.getCurrentUrl());
+        assertEquals(DOMAIN + port + "/home", driver.getCurrentUrl());
         homePage.doLogout();
         driver.get(DOMAIN + port + "/home");
         assertNotEquals(DOMAIN + port + "/home", driver.getCurrentUrl());
+    }
+
+    @Test
+    public void signupSameUsernameGivesError() {
+        driver.get(DOMAIN + port + "/signup");
+        signupPage.doSignup(USERNAME, PASSWORD, F_NAME, L_NAME);
+        driver.get(DOMAIN + port + "/signup");
+        signupPage.doSignup(USERNAME, PASSWORD, F_NAME, L_NAME);
+        assertEquals("User already exists with that username!", signupPage.getErrorMessage());
     }
 }

@@ -4,7 +4,6 @@ import com.rmmcosta.superduperdrive.model.File;
 import com.rmmcosta.superduperdrive.model.FileName;
 import org.apache.ibatis.annotations.*;
 
-import java.sql.Blob;
 import java.util.List;
 
 @Mapper

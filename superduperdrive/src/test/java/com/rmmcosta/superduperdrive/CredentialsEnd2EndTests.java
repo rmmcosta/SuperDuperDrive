@@ -8,8 +8,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CredentialsEnd2EndTests {
@@ -23,11 +22,15 @@ public class CredentialsEnd2EndTests {
     private SignupPage signupPage;
     private HomePage homePage;
 
-    private static final String USERNAME = "rmmcosta";
+    private static final String USERNAME = "rmmcosta1";
     private static final String PASSWORD = "12345";
     private static final String F_NAME = "Ricardo";
     private static final String L_NAME = "Costa";
     private static final String URL = "http://localhost:8080/chat";
+
+    private static final String NEW_USERNAME = "rmmcosta11";
+    private static final String NEW_PASSWORD = "123451";
+    private static final String NEW_URL = "http://localhost:8080/chat1";
 
     @BeforeAll
     public static void initializeWebDriver() {
@@ -67,7 +70,7 @@ public class CredentialsEnd2EndTests {
     }
 
     @Test
-    public void credentialCreateDelete() {
+    public void credentialCreateEditDelete() {
         assertEquals(DOMAIN + port + "/home", driver.getCurrentUrl());
         int initialCredentialsCount = homePage.getCredentialsCount();
         homePage.createCredential(URL, USERNAME, PASSWORD);
@@ -75,7 +78,16 @@ public class CredentialsEnd2EndTests {
         boolean foundMatchingCredential;
         foundMatchingCredential = homePage.getCredentials().stream().filter(credential -> credential.getUrl().equals(URL) && credential.getUsername().equals(USERNAME)).count() == 1;
         assertTrue(foundMatchingCredential);
-        homePage.deleteCredential();
+        //let's try to create a credential with the same url and username and assert if an error message is displayed in the screen
+        assertEquals(homePage.createSameCredential(URL, USERNAME, ""), "Credential already exists with that Url and Username!");
+        homePage.closeCredentialModal();
+        homePage.updateCredential(URL, NEW_URL, NEW_USERNAME, NEW_PASSWORD);
+        foundMatchingCredential = homePage.getCredentials().stream().filter(credential -> credential.getUrl().equals(NEW_URL) && credential.getUsername().equals(NEW_USERNAME)).count() == 1;
+        assertTrue(foundMatchingCredential);
+        //now let's see if the old credential was gone
+        foundMatchingCredential = homePage.getCredentials().stream().filter(credential -> credential.getUrl().equals(URL) && credential.getUsername().equals(USERNAME)).count() == 0;
+        assertTrue(foundMatchingCredential);//doesn't matter which credential we are deleting. We just want to make sure that the delete works.
+        homePage.deleteCredential(NEW_URL, NEW_USERNAME);
         assertEquals(initialCredentialsCount, homePage.getCredentialsCount());
     }
 }

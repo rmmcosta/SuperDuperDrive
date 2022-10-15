@@ -208,8 +208,11 @@
                         <textarea class="form-control" id="note-description" th:field="*{description}"></textarea>
                     </div>
                 </div>
+                <div th:if="${noteErrorMessage ne null}" class="alert alert-danger m-2">
+                    <span th:text="${noteErrorMessage}" id="note-error-message">Example Signup Error Message</span>
+                </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="note-modal-close">Close</button>
                     <button type="submit" class="btn btn-primary" id="note-save">Save changes</button>
                 </div>
             </form>
@@ -240,8 +243,11 @@
                         <input type="text" class="form-control" id="credential-password" th:field="*{password}"></input>
                     </div>
                 </div>
+                <div th:if="${credentialErrorMessage ne null}" class="alert alert-danger m-2">
+                    <span th:text="${credentialErrorMessage}" id="credential-error-message">Example Signup Error Message</span>
+                </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="credential-modal-close">Close</button>
                     <button type="submit" class="btn btn-primary" id="credential-save">Save changes</button>
                 </div>
             </form>

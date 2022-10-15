@@ -49,9 +49,9 @@ public class HomePage {
     @FindBy(id = "note-new")
     private WebElement noteNew;
     @FindBy(id = "note-list-edit")
-    private WebElement noteListEdit;
+    private List<WebElement> noteListEdit;
     @FindBy(id = "note-list-delete")
-    private WebElement noteListDelete;
+    private List<WebElement> noteListDelete;
     @FindBy(id = "note-list-id")
     private List<WebElement> noteListId;
     @FindBy(id = "note-list-title")
@@ -90,6 +90,17 @@ public class HomePage {
     @FindBy(id = "credential-save")
     private WebElement credentialSave;
 
+    @FindBy(id = "note-error-message")
+    private WebElement noteErrorMessage;
+
+    @FindBy(id = "credential-error-message")
+    private WebElement credentialErrorMessage;
+
+    @FindBy(id = "note-modal-close")
+    private WebElement noteModalClose;
+    @FindBy(id = "credential-modal-close")
+    private WebElement credentialModalClose;
+
     private WebDriver driver;
 
     public HomePage(WebDriver driver) {
@@ -118,11 +129,47 @@ public class HomePage {
 
     public void createNote(String title, String description) {
         navNotesTab.click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(1));
+        wait.until(webDriver -> webDriver.findElement(By.id("note-new")));
         noteNew.click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-title")));
         noteTitle.clear();
         noteTitle.sendKeys(title);
         noteDescription.clear();
         noteDescription.sendKeys(description);
+        noteSave.click();
+    }
+
+    public String createSameNote(String title, String description) {
+        navNotesTab.click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(1));
+        wait.until(webDriver -> webDriver.findElement(By.id("note-new")));
+        noteNew.click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-title")));
+        noteTitle.clear();
+        noteTitle.sendKeys(title);
+        noteDescription.clear();
+        noteDescription.sendKeys(description);
+        noteSave.click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-error-message")));
+        return noteErrorMessage.getText();
+    }
+
+    public void updateNote(String oldTitle, String newTitle, String newDescription) {
+        navNotesTab.click();
+        int i;
+        for (i = 0; i < noteListTitle.size(); i++) {
+            if (noteListTitle.get(i).getText().equals(oldTitle)) {
+                break;
+            }
+        }
+        noteListEdit.get(i).click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(1));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-title")));
+        noteTitle.clear();
+        noteTitle.sendKeys(newTitle);
+        noteDescription.clear();
+        noteDescription.sendKeys(newDescription);
         noteSave.click();
     }
 
@@ -134,12 +181,30 @@ public class HomePage {
         List<Note> notes = new ArrayList<>();
         Note tempNote = new Note();
         for (int i = 0; i < noteListTitle.size(); i++) {
-            tempNote.setNoteId(Integer.valueOf(noteListId.get(i).getText()));
+            //tempNote.setNoteId(Integer.valueOf(noteListId.get(i).getText()));
             tempNote.setTitle(noteListTitle.get(i).getText());
             tempNote.setDescription(noteListDescription.get(i).getText());
             notes.add(tempNote);
         }
         return notes;
+    }
+
+    public boolean deleteNote(String title) {
+        if (!noteListDelete.isEmpty()) {
+            int i;
+            for (i = 0; i < noteListTitle.size(); i++) {
+                if (noteListTitle.get(i).getText().equals(title)) {
+                    break;
+                }
+            }
+            noteListDelete.get(i).click();
+            return true;
+        } else
+            return false;
+    }
+
+    public void closeNoteModal() {
+        noteModalClose.click();
     }
 
     public void createCredential(String url, String username, String password) {
@@ -154,6 +219,43 @@ public class HomePage {
         credentialUsername.sendKeys(username);
         credentialPassword.clear();
         credentialPassword.sendKeys(password);
+        credentialSave.click();
+    }
+
+    public String createSameCredential(String url, String username, String password) {
+        navCredentialsTab.click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(1));
+        wait.until(webDriver -> webDriver.findElement(By.id("credential-new")));
+        credentialNew.click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-url")));
+        credentialURL.clear();
+        credentialURL.sendKeys(url);
+        credentialUsername.clear();
+        credentialUsername.sendKeys(username);
+        credentialPassword.clear();
+        credentialPassword.sendKeys(password);
+        credentialSave.click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-error-message")));
+        return credentialErrorMessage.getText();
+    }
+
+    public void updateCredential(String oldUrl, String newUrl, String newUsername, String newPassword) {
+        navCredentialsTab.click();
+        int i;
+        for (i = 0; i < credentialListUrl.size(); i++) {
+            if (credentialListUrl.get(i).getText().equals(oldUrl)) {
+                break;
+            }
+        }
+        credentialListEdit.get(i).click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(1));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-url")));
+        credentialURL.clear();
+        credentialURL.sendKeys(newUrl);
+        credentialUsername.clear();
+        credentialUsername.sendKeys(newUsername);
+        credentialPassword.clear();
+        credentialPassword.sendKeys(newPassword);
         credentialSave.click();
     }
 
@@ -174,13 +276,22 @@ public class HomePage {
         return credentials;
     }
 
-    public boolean deleteCredential() {
-        if(!credentialListDelete.isEmpty()) {
-            credentialListDelete.get(0).click();
+    public boolean deleteCredential(String url, String username) {
+        if (!credentialListDelete.isEmpty()) {
+            int i;
+            for (i = 0; i < credentialListUrl.size(); i++) {
+                if (credentialListUrl.get(i).getText().equals(url) && credentialListUsername.get(i).getText().equals(username)) {
+                    break;
+                }
+            }
+            credentialListDelete.get(i).click();
             return true;
-        }
-        else
+        } else
             return false;
+    }
+
+    public void closeCredentialModal() {
+        credentialModalClose.click();
     }
 
     public boolean isNoteFormEmpty() {

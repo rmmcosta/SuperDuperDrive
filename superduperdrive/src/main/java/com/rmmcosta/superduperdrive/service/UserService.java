@@ -32,4 +32,8 @@ public class UserService {
     public User getUser(String username) {
         return userMapper.getUser(username);
     }
+
+    public boolean deleteUser(String username) {
+        return userMapper.deleteUser(username);
+    }
 }

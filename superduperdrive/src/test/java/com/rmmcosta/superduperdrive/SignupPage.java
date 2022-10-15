@@ -17,6 +17,9 @@ public class SignupPage {
     @FindBy(id = "signup")
     private WebElement btnSignup;
 
+    @FindBy(id = "signup-error-message")
+    private WebElement signupErrorMessage;
+
     public SignupPage(WebDriver driver) {
         PageFactory.initElements(driver, this);
     }
@@ -32,4 +35,13 @@ public class SignupPage {
         inputLastName.sendKeys(lname);
         btnSignup.click();
     }
+
+    public String getErrorMessage() {
+        if (signupErrorMessage.isDisplayed()) {
+            return signupErrorMessage.getText();
+        } else {
+            return "";
+        }
+    }
+
 }

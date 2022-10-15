@@ -48,3 +48,18 @@
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
 }
+
+.nav-link {
+  color: gray;
+  text-decoration: underline 0.05em lightgray;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color 300ms, text-underline-offset 300ms;
+}
+
+.nav-link:hover, .nav-link:focus, .nav-link.active {
+  text-decoration-color: rgb(255 118 21);
+  text-underline-offset: 0.4em;
+  text-decoration-thickness: 0.15em;
+  color: black;
+  font-weight: bold;
+}

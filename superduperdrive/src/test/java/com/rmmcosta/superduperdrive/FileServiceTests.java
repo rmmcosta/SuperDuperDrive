@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.*;
-import java.sql.Blob;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;

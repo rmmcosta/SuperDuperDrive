@@ -1,7 +1,6 @@
 package com.rmmcosta.superduperdrive;
 
 import com.rmmcosta.superduperdrive.model.Credential;
-import com.rmmcosta.superduperdrive.model.Note;
 import com.rmmcosta.superduperdrive.service.CredentialService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +25,12 @@ public class CredentialServiceTests {
         Credential returnedCredential = credentialService.getCredentialById(insertedCredentialId);
         assertNotNull(returnedCredential);
         assertEquals("p@ssw0rd", returnedCredential.getPassword());
+        Credential newSameUrlUsernameCredential = new Credential();
+        newSameUrlUsernameCredential.setUrl("http://localhost");
+        newSameUrlUsernameCredential.setUsername("aramos");
+        assertThrows(RuntimeException.class, () -> {
+            credentialService.insertCredential(newSameUrlUsernameCredential);
+        }, "Credential already exists with that Url and Username!");
         Credential insertedCredentialFromList = credentialService.getCredentials().stream().filter(c -> c.getCredentialId() == insertedCredentialId).toList().get(0);
         assertEquals(insertedCredentialId, insertedCredentialFromList.getCredentialId());
         assertTrue(credentialService.deleteCredential(insertedCredentialId));

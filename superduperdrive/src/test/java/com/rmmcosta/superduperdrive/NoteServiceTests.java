@@ -22,6 +22,11 @@ public class NoteServiceTests {
         int insertedNoteId = noteService.insertNote(note);
         assertEquals(initCount + 1, noteService.getNotes().size());
         assertNotNull(noteService.getNoteById(insertedNoteId));
+        Note newSameTitleNote = new Note();
+        newSameTitleNote.setTitle("xpto");
+        assertThrows(RuntimeException.class, () -> {
+            noteService.insertNote(newSameTitleNote);
+        }, "Note already exists with that title!");
         Note insertedNoteFromList = noteService.getNotes().stream().filter(n -> n.getNoteId() == insertedNoteId).toList().get(0);
         assertEquals(insertedNoteId, insertedNoteFromList.getNoteId());
         assertTrue(noteService.deleteNote(insertedNoteId));

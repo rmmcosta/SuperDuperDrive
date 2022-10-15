@@ -23,6 +23,7 @@ public class NoteService {
     }
 
     public int insertNote(Note note) {
+        checkExistingNote(note);
         return noteMapper.insertNote(note);
     }
 
@@ -31,6 +32,14 @@ public class NoteService {
     }
 
     public boolean updateNote(Note note) {
+        checkExistingNote(note);
         return noteMapper.updateNote(note);
+    }
+
+    private void checkExistingNote(Note note) {
+        Note existingNote = noteMapper.getNoteByTitle(note.getTitle());
+        if (existingNote != null && (note.getNoteId() == null || existingNote.getNoteId() != note.getNoteId())) {
+            throw new RuntimeException("Note already exists with that title!");
+        }
     }
 }

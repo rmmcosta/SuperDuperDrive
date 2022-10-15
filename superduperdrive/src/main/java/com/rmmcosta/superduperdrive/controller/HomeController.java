@@ -80,14 +80,29 @@ public class HomeController {
 
     @PostMapping("/newNote")
     public String newNote(@ModelAttribute NoteForm noteForm, Model model) {
+        boolean error = false;
         if (noteForm.getNoteId() != null) {
             System.out.println("update note: " + noteForm);
-            noteService.updateNote(modelMapper.map(noteForm, Note.class));
+            try {
+                noteService.updateNote(modelMapper.map(noteForm, Note.class));
+            } catch (Exception e) {
+                model.addAttribute("noteErrorMessage", e.getMessage());
+                error = true;
+            }
         } else {
             System.out.println("create note: " + noteForm);
-            noteService.insertNote(modelMapper.map(noteForm, Note.class));
+            try {
+                noteService.insertNote(modelMapper.map(noteForm, Note.class));
+            } catch (Exception e) {
+                model.addAttribute("noteErrorMessage", e.getMessage());
+                error = true;
+            }
         }
-        model.addAttribute("noteForm", new NoteForm());
+        if (error) {
+            model.addAttribute("noteForm", noteForm);
+        } else {
+            model.addAttribute("noteForm", new NoteForm());
+        }
         model.addAttribute("tabActive", "Notes");
         model.addAttribute("credentialList", credentialService.getCredentials());
         model.addAttribute("noteList", noteService.getNotes());
@@ -97,14 +112,29 @@ public class HomeController {
 
     @PostMapping("/newCredential")
     public String newCredential(@ModelAttribute CredentialForm credentialForm, Model model) {
+        boolean error = false;
         if (credentialForm.getCredentialId() != null) {
             System.out.println("edit Credential: " + credentialForm);
-            credentialService.updateCredential(modelMapper.map(credentialForm, Credential.class));
+            try {
+                credentialService.updateCredential(modelMapper.map(credentialForm, Credential.class));
+            } catch (Exception e) {
+                model.addAttribute("credentialErrorMessage", e.getMessage());
+                error = true;
+            }
         } else {
             System.out.println("new Credential: " + credentialForm);
-            credentialService.insertCredential(modelMapper.map(credentialForm, Credential.class));
+            try {
+                credentialService.insertCredential(modelMapper.map(credentialForm, Credential.class));
+            } catch (Exception e) {
+                model.addAttribute("credentialErrorMessage", e.getMessage());
+                error = true;
+            }
         }
-        model.addAttribute("credentialForm", new CredentialForm());
+        if (error) {
+            model.addAttribute("credentialForm", credentialForm);
+        } else {
+            model.addAttribute("credentialForm", new CredentialForm());
+        }
         model.addAttribute("tabActive", "Credentials");
         model.addAttribute("credentialList", credentialService.getCredentials());
         model.addAttribute("noteList", noteService.getNotes());

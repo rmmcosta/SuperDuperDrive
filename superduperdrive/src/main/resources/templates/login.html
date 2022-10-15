@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SDD</title>
+    <title>Login</title>
     <link rel="stylesheet" th:href="@{~/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{~/css/login.css}">
 </head>
@@ -28,11 +28,15 @@
             </label>
         </div>
         <button class="mb-2 w-100 btn btn-lg btn-primary" type="submit" id="login">Sign in</button>
+        <div id="login-error-message" class="alert alert-danger mt-2 d-none">
+            Invalid Credentials!
+        </div>
         <a href="#" th:href="@{/signup}" id="signup">Sign Up</a>
         <p class="mt-5 mb-3 text-muted">&copy; TheSoftWebArchitect - 2022</p>
     </form>
 </main>
 <script th:src="@{~/js/bootstrap.bundle.min.js}" defer></script>
+<script th:src="@{~/js/login.js}" defer></script>
 </body>
 </body>
 </html>

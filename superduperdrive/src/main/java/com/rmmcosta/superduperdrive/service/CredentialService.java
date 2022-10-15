@@ -6,9 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 import java.util.List;
 
 @Service
@@ -38,6 +35,7 @@ public class CredentialService {
     }
 
     public int insertCredential(Credential credential) {
+        checkExistingCredential(credential);
         credential.setPassword(encryptionService.encrypt(credential.getPassword(), key));
         System.out.println("Credential before insert: " + credential);
         return credentialMapper.insertCredential(credential);
@@ -48,7 +46,15 @@ public class CredentialService {
     }
 
     public boolean updateCredential(Credential credential) {
+        checkExistingCredential(credential);
         credential.setPassword(encryptionService.encrypt(credential.getPassword(), key));
         return credentialMapper.updateCredential(credential);
+    }
+
+    private void checkExistingCredential(Credential credential) {
+        Credential existingCredential = credentialMapper.getCredentialByUrlAndUsername(credential.getUrl(), credential.getUsername());
+        if (existingCredential != null && (credential.getCredentialId() == null || existingCredential.getCredentialId() != credential.getCredentialId())) {
+            throw new RuntimeException("Credential already exists with that Url and Username!");
+        }
     }
 }
