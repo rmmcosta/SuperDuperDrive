@@ -9,4 +9,18 @@ window.addEventListener('load', (event) => {
     notesModal.show();
   if (document.getElementById('credential-id').value !== '' || document.getElementById('credential-error-message') !== null)
     credentialsModal.show();
+  var alertNode = document.querySelector('.alert')
+  if (alertNode !== null) {
+    setTimeout(
+      () => { 
+        let successAlert = document.getElementById('success-alert');
+        let bsSuccessAlert = new bootstrap.Alert(successAlert);
+        bsSuccessAlert.close();
+        let errorAlert = document.getElementById('error-alert');
+        let bsErrorAlert = new bootstrap.Alert(errorAlert);
+        bsErrorAlert.close();
+      },
+      3000
+    );
+  }
 });

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" th:href="@{~/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{~/css/home.css}">
 </head>
+
 <body>
 <div class="container">
     <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
@@ -16,29 +18,59 @@
         </a>
 
         <div class="col-md-3 text-end">
-            <a href="#" class="nav-link link-primary" id="logout" th:href="@{/logout}"><strong>Logout</strong></a>
+            <a href="#" class="nav-link link-primary" id="logout" th:href="@{/logout}"><strong
+                    th:text="${'('+loggedUsername + ') Logout'}">Logout</strong>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person"
+                     viewBox="0 0 16 16">
+                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"></path>
+                </svg>
+            </a>
         </div>
     </header>
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
             <button class="nav-link" th:classappend="${tabActive}=='Files' ? 'active' : ''" id="nav-files-tab"
-                    data-bs-toggle="tab" data-bs-target="#nav-files"
-                    type="button" role="tab" aria-controls="nav-files" aria-selected="true">Files
+                    data-bs-toggle="tab" data-bs-target="#nav-files" type="button" role="tab" aria-controls="nav-files"
+                    aria-selected="true">Files
             </button>
             <button class="nav-link" th:classappend="${tabActive}=='Notes' ? 'active' : ''" id="nav-notes-tab"
-                    data-bs-toggle="tab" data-bs-target="#nav-notes" type="button"
-                    role="tab" aria-controls="nav-notes" aria-selected="false">Notes
+                    data-bs-toggle="tab" data-bs-target="#nav-notes" type="button" role="tab" aria-controls="nav-notes"
+                    aria-selected="false">Notes
             </button>
             <button class="nav-link" th:classappend="${tabActive}=='Credentials' ? 'active' : ''"
-                    id="nav-credentials-tab" data-bs-toggle="tab" data-bs-target="#nav-credentials"
-                    type="button" role="tab" aria-controls="nav-credentials" aria-selected="false">Credentials
+                    id="nav-credentials-tab" data-bs-toggle="tab" data-bs-target="#nav-credentials" type="button"
+                    role="tab" aria-controls="nav-credentials" aria-selected="false">Credentials
             </button>
         </div>
     </nav>
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+            <path
+                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+        </symbol>
+        <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+        </symbol>
+    </svg>
+    <div class="alert alert-success d-flex align-items-center alert-dismissible fade show mt-4 mb-4" role="alert"
+         id="success-alert" th:if="${successMessage != '-1'}">
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
+            <use xlink:href="#check-circle-fill"/>
+        </svg>
+        <span th:text="${successMessage}" id="success-message">
+                An example success alert with an icon
+            </span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="alert alert-danger d-flex align-items-center alert-dismissible fade show mt-4 mb-4" role="alert" th:if="${errorMessage ne null}" id="error-alert">
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+        <span th:text="${errorMessage}" id="error-message">
+            An example danger alert with an icon
+        </span>
+    </div>
     <div class="tab-content" id="nav-tabContent">
         <div class="tab-pane fade" th:classappend="${tabActive}=='Files' ? 'show active' : ''" id="nav-files"
-             role="tabpanel" aria-labelledby="nav-files-tab"
-             tabindex="0">
+             role="tabpanel" aria-labelledby="nav-files-tab" tabindex="0">
             <form th:action="@{/uploadFile}" method="post" enctype="multipart/form-data">
                 <div class="mt-3 mb-3 text-end">
                     <input type="file" name="file-new" id="file-new">
@@ -53,6 +85,9 @@
                 </tr>
                 </thead>
                 <tbody>
+                <tr class="m-2 p-2" th:if="${#lists.isEmpty(fileList)}">
+                    <td class="list-placeholder">No files uploaded yet...</td>
+                </tr>
                 <tr th:each="file : ${fileList}">
                     <td class="d-none" id="file-list-id" th:text="${file.fileId}"></td>
                     <td id="file-list-name" th:text="${file.fileName}">MyBestPic.png</td>
@@ -63,18 +98,16 @@
                                     <form action="#" th:action="@{/downloadFile}" method="post">
                                         <input type="hidden" th:value="${file.fileId}" name="file-list-view-id"
                                                id="file-list-view-id">
-                                        <input class="btn btn-success" type="submit" id="file-list-view"
-                                               name="file-list-view"
-                                               value="View">
+                                        <input class="btn btn-outline-success" type="submit" id="file-list-view"
+                                               name="file-list-view" value="View">
                                     </form>
                                 </div>
                                 <div class="col-sm-auto">
                                     <form action="#" th:action="@{/deleteFile}" method="post">
-                                        <input type="hidden" th:value="${file.fileId}" name="file-list-delete-id"
-                                               id="file-list-delete-id">
-                                        <input class="btn btn-danger" type="submit" id="file-list-delete"
-                                               name="file-list-delete"
-                                               value="Delete">
+                                        <input type="hidden" th:value="${file.fileId}"
+                                               name="file-list-delete-id" id="file-list-delete-id">
+                                        <input class="btn btn-outline-danger" type="submit" id="file-list-delete"
+                                               name="file-list-delete" value="Delete">
                                     </form>
                                 </div>
                             </div>
@@ -101,6 +134,9 @@
                 </tr>
                 </thead>
                 <tbody>
+                <tr class="m-2 p-2" th:if="${#lists.isEmpty(noteList)}">
+                    <td class="list-placeholder">No notes created yet...</td>
+                </tr>
                 <tr th:each="note : ${noteList}">
                     <td class="d-none" id="note-list-id" th:text="${note.noteId}"></td>
                     <td id="note-list-title" th:text="${note.title}">The Title</td>
@@ -112,18 +148,16 @@
                                     <form action="#" th:action="@{/editNote}" method="post">
                                         <input type="hidden" th:value="${note.noteId}" name="note-list-edit-id"
                                                id="note-list-edit-id">
-                                        <input class="btn btn-success" type="submit" id="note-list-edit"
-                                               name="note-list-edit"
-                                               value="Edit">
+                                        <input class="btn btn-outline-success" type="submit" id="note-list-edit"
+                                               name="note-list-edit" value="Edit">
                                     </form>
                                 </div>
                                 <div class="col-sm-auto">
                                     <form action="#" th:action="@{/deleteNote}" method="post">
-                                        <input type="hidden" th:value="${note.noteId}" name="note-list-delete-id"
-                                               id="note-list-delete-id">
-                                        <input class="btn btn-danger" type="submit" id="note-list-delete"
-                                               name="note-list-delete"
-                                               value="Delete">
+                                        <input type="hidden" th:value="${note.noteId}"
+                                               name="note-list-delete-id" id="note-list-delete-id">
+                                        <input class="btn btn-outline-danger" type="submit" id="note-list-delete"
+                                               name="note-list-delete" value="Delete">
                                     </form>
                                 </div>
                             </div>
@@ -134,8 +168,7 @@
             </table>
         </div>
         <div class="tab-pane fade" th:classappend="${tabActive}=='Credentials' ? 'show active' : ''"
-             id="nav-credentials" role="tabpanel" aria-labelledby="nav-credentials-tab"
-             tabindex="0">
+             id="nav-credentials" role="tabpanel" aria-labelledby="nav-credentials-tab" tabindex="0">
             <div class="text-end">
                 <button type="button" class="btn btn-primary mt-3 mb-3" data-bs-toggle="modal"
                         data-bs-target="#credentialsModal" id="credential-new" name="credential-new">
@@ -152,11 +185,15 @@
                 </tr>
                 </thead>
                 <tbody>
+                <tr class="m-2 p-2" th:if="${#lists.isEmpty(credentialList)}">
+                    <td class="list-placeholder">No credentials created yet...</td>
+                </tr>
                 <tr th:each="credential : ${credentialList}">
                     <td class="d-none" id="credential-list-id" th:text="${credential.credentialId}">33</td>
                     <td id="credential-list-url" th:text="${credential.url}">http://localhost:8080/login</td>
                     <td id="credential-list-username" th:text="${credential.username}">rmmcosta</td>
-                    <td id="credential-list-password" th:text="${credential.password}">7FRGNTHTJDFJASKJ3784374==</td>
+                    <td id="credential-list-password" th:text="${credential.password}">7FRGNTHTJDFJASKJ3784374==
+                    </td>
                     <th scope="row">
                         <div class="container d-flex justify-content-end">
                             <div class="row">
@@ -164,18 +201,16 @@
                                     <!-- Button trigger modal -->
                                     <form action="#" th:action="@{/editCredential}" method="post">
                                         <input type="hidden" th:value="${credential.credentialId}"
-                                               name="credential-list-edit-id"
-                                               id="credential-list-edit-id">
-                                        <input class="btn btn-success" type="submit" id="credential-list-edit"
+                                               name="credential-list-edit-id" id="credential-list-edit-id">
+                                        <input class="btn btn-outline-success" type="submit" id="credential-list-edit"
                                                name="credential-list-edit" value="Edit">
                                     </form>
                                 </div>
                                 <div class="col-sm-auto">
                                     <form action="#" th:action="@{/deleteCredential}" method="post">
                                         <input type="hidden" th:value="${credential.credentialId}"
-                                               name="credential-list-delete-id"
-                                               id="credential-list-delete-id">
-                                        <input class="btn btn-danger" type="submit" id="credential-list-delete"
+                                               name="credential-list-delete-id" id="credential-list-delete-id">
+                                        <input class="btn btn-outline-danger" type="submit" id="credential-list-delete"
                                                name="credential-list-delete" value="Delete">
                                     </form>
                                 </div>
@@ -212,7 +247,9 @@
                     <span th:text="${noteErrorMessage}" id="note-error-message">Example Signup Error Message</span>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="note-modal-close">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            id="note-modal-close">Close
+                    </button>
                     <button type="submit" class="btn btn-primary" id="note-save">Save changes</button>
                 </div>
             </form>
@@ -236,18 +273,23 @@
                     </div>
                     <div class="mb-3">
                         <label for="credential-username" class="col-form-label">Username:</label>
-                        <input type="text" class="form-control" id="credential-username" th:field="*{username}"></input>
+                        <input type="text" class="form-control" id="credential-username"
+                               th:field="*{username}"></input>
                     </div>
                     <div class="mb-3">
                         <label for="credential-password" class="col-form-label">Password:</label>
-                        <input type="text" class="form-control" id="credential-password" th:field="*{password}"></input>
+                        <input type="text" class="form-control" id="credential-password"
+                               th:field="*{password}"></input>
                     </div>
                 </div>
                 <div th:if="${credentialErrorMessage ne null}" class="alert alert-danger m-2">
-                    <span th:text="${credentialErrorMessage}" id="credential-error-message">Example Signup Error Message</span>
+                        <span th:text="${credentialErrorMessage}" id="credential-error-message">Example Signup Error
+                            Message</span>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="credential-modal-close">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            id="credential-modal-close">Close
+                    </button>
                     <button type="submit" class="btn btn-primary" id="credential-save">Save changes</button>
                 </div>
             </form>
@@ -257,4 +299,5 @@
 <script th:src="@{~/js/bootstrap.bundle.min.js}" defer></script>
 <script th:src="@{~/js/home.js}" defer></script>
 </body>
+
 </html>

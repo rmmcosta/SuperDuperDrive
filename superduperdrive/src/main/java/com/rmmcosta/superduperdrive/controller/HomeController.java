@@ -12,10 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -24,7 +21,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
+import java.security.Principal;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,42 +48,51 @@ public class HomeController {
     }
 
     @GetMapping("/home")
-    public String getHomePage(Model model) {
-        model.addAttribute("fileList", fileService.getFileNames());
-        model.addAttribute("noteList", noteService.getNotes());
-        model.addAttribute("credentialList", credentialService.getCredentials());
+    public String getHomePage(Model model, Principal principal) {
+        model.addAttribute("loggedUsername", principal.getName());
+        model.addAttribute("fileList", fileService.getFileNames(principal.getName()));
+        model.addAttribute("noteList", noteService.getNotes(principal.getName()));
+        model.addAttribute("credentialList", credentialService.getCredentials(principal.getName()));
         model.addAttribute("tabActive", "Files");
         return "home";
     }
 
     //https://attacomsian.com/blog/spring-boot-thymeleaf-file-upload
     @PostMapping("/uploadFile")
-    public String newFile(@RequestParam("file-new") MultipartFile multipartFile, Model model) {
+    public String newFile(@RequestParam("file-new") MultipartFile multipartFile, Model model, Principal principal) {
         File file = new File();
         // normalize the file path
         file.setFileName(StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename())));
 
         try {
             file.setFileBinary(multipartFile.getInputStream().readAllBytes());
-            fileService.insertFile(file);
-            model.addAttribute("fileList", fileService.getFileNames());
+
+            try {
+                fileService.insertFile(file, principal.getName());
+                model.addAttribute("successMessage", "File uploaded with success!");
+            } catch (Exception e) {
+                model.addAttribute("errorMessage", e.getMessage());
+            }
+            model.addAttribute("fileList", fileService.getFileNames(principal.getName()));
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
         model.addAttribute("tabActive", "Files");
-        model.addAttribute("credentialList", credentialService.getCredentials());
-        model.addAttribute("noteList", noteService.getNotes());
-        model.addAttribute("fileList", fileService.getFileNames());
+        model.addAttribute("credentialList", credentialService.getCredentials(principal.getName()));
+        model.addAttribute("noteList", noteService.getNotes(principal.getName()));
+        model.addAttribute("fileList", fileService.getFileNames(principal.getName()));
+        model.addAttribute("loggedUsername", principal.getName());
         return "home";
     }
 
     @PostMapping("/newNote")
-    public String newNote(@ModelAttribute NoteForm noteForm, Model model) {
+    public String newNote(@ModelAttribute NoteForm noteForm, Model model, Principal principal) {
         boolean error = false;
+        String successOperation = noteForm.getNoteId() != null ? "updated" : "created";
         if (noteForm.getNoteId() != null) {
             System.out.println("update note: " + noteForm);
             try {
-                noteService.updateNote(modelMapper.map(noteForm, Note.class));
+                noteService.updateNote(modelMapper.map(noteForm, Note.class), principal.getName());
             } catch (Exception e) {
                 model.addAttribute("noteErrorMessage", e.getMessage());
                 error = true;
@@ -92,7 +100,7 @@ public class HomeController {
         } else {
             System.out.println("create note: " + noteForm);
             try {
-                noteService.insertNote(modelMapper.map(noteForm, Note.class));
+                noteService.insertNote(modelMapper.map(noteForm, Note.class), principal.getName());
             } catch (Exception e) {
                 model.addAttribute("noteErrorMessage", e.getMessage());
                 error = true;
@@ -102,21 +110,24 @@ public class HomeController {
             model.addAttribute("noteForm", noteForm);
         } else {
             model.addAttribute("noteForm", new NoteForm());
+            model.addAttribute("successMessage", "Note " + successOperation + " with success!");
         }
         model.addAttribute("tabActive", "Notes");
-        model.addAttribute("credentialList", credentialService.getCredentials());
-        model.addAttribute("noteList", noteService.getNotes());
-        model.addAttribute("fileList", fileService.getFileNames());
+        model.addAttribute("credentialList", credentialService.getCredentials(principal.getName()));
+        model.addAttribute("noteList", noteService.getNotes(principal.getName()));
+        model.addAttribute("fileList", fileService.getFileNames(principal.getName()));
+        model.addAttribute("loggedUsername", principal.getName());
         return "home";
     }
 
     @PostMapping("/newCredential")
-    public String newCredential(@ModelAttribute CredentialForm credentialForm, Model model) {
+    public String newCredential(@ModelAttribute CredentialForm credentialForm, Model model, Principal principal) {
         boolean error = false;
+        String successOperation = credentialForm.getCredentialId() != null ? "updated" : "created";
         if (credentialForm.getCredentialId() != null) {
             System.out.println("edit Credential: " + credentialForm);
             try {
-                credentialService.updateCredential(modelMapper.map(credentialForm, Credential.class));
+                credentialService.updateCredential(modelMapper.map(credentialForm, Credential.class), principal.getName());
             } catch (Exception e) {
                 model.addAttribute("credentialErrorMessage", e.getMessage());
                 error = true;
@@ -124,7 +135,7 @@ public class HomeController {
         } else {
             System.out.println("new Credential: " + credentialForm);
             try {
-                credentialService.insertCredential(modelMapper.map(credentialForm, Credential.class));
+                credentialService.insertCredential(modelMapper.map(credentialForm, Credential.class), principal.getName());
             } catch (Exception e) {
                 model.addAttribute("credentialErrorMessage", e.getMessage());
                 error = true;
@@ -134,90 +145,106 @@ public class HomeController {
             model.addAttribute("credentialForm", credentialForm);
         } else {
             model.addAttribute("credentialForm", new CredentialForm());
+            model.addAttribute("successMessage", "Credential " + successOperation + " with success!");
         }
         model.addAttribute("tabActive", "Credentials");
-        model.addAttribute("credentialList", credentialService.getCredentials());
-        model.addAttribute("noteList", noteService.getNotes());
-        model.addAttribute("fileList", fileService.getFileNames());
+        model.addAttribute("credentialList", credentialService.getCredentials(principal.getName()));
+        model.addAttribute("noteList", noteService.getNotes(principal.getName()));
+        model.addAttribute("fileList", fileService.getFileNames(principal.getName()));
+        model.addAttribute("loggedUsername", principal.getName());
         return "home";
     }
 
     @PostMapping("/editCredential")
-    public String editCredential(@RequestParam("credential-list-edit-id") String credentialId, Model model) {
+    public String editCredential(@RequestParam("credential-list-edit-id") String credentialId, Model model, Principal principal) {
         System.out.println("edit Credential: " + credentialId);
         CredentialForm credentialForm = new CredentialForm();
-        Credential credential = credentialService.getCredentialById(Integer.valueOf(credentialId));
+        Credential credential = credentialService.getCredentialById(Integer.valueOf(credentialId), principal.getName());
         modelMapper.map(credential, credentialForm);
         model.addAttribute("credentialForm", credentialForm);
         model.addAttribute("tabActive", "Credentials");
-        model.addAttribute("credentialList", credentialService.getCredentials());
-        model.addAttribute("noteList", noteService.getNotes());
-        model.addAttribute("fileList", fileService.getFileNames());
+        model.addAttribute("credentialList", credentialService.getCredentials(principal.getName()));
+        model.addAttribute("noteList", noteService.getNotes(principal.getName()));
+        model.addAttribute("fileList", fileService.getFileNames(principal.getName()));
+        model.addAttribute("loggedUsername", principal.getName());
         return "home";
     }
 
     @PostMapping("/editNote")
-    public String editNote(@RequestParam("note-list-edit-id") String noteId, Model model) {
+    public String editNote(@RequestParam("note-list-edit-id") String noteId, Model model, Principal principal) {
         System.out.println("edit Note: " + noteId);
         NoteForm noteForm = new NoteForm();
-        Note note = noteService.getNoteById(Integer.valueOf(noteId));
+        Note note = noteService.getNoteById(Integer.valueOf(noteId), principal.getName());
         modelMapper.map(note, noteForm);
         model.addAttribute("noteForm", noteForm);
         model.addAttribute("tabActive", "Notes");
-        model.addAttribute("credentialList", credentialService.getCredentials());
-        model.addAttribute("noteList", noteService.getNotes());
-        model.addAttribute("fileList", fileService.getFileNames());
+        model.addAttribute("credentialList", credentialService.getCredentials(principal.getName()));
+        model.addAttribute("noteList", noteService.getNotes(principal.getName()));
+        model.addAttribute("fileList", fileService.getFileNames(principal.getName()));
+        model.addAttribute("loggedUsername", principal.getName());
         return "home";
     }
 
     @PostMapping("/deleteCredential")
-    public String deleteCredential(@RequestParam("credential-list-delete-id") String credentialId, Model model) {
+    public String deleteCredential(@RequestParam("credential-list-delete-id") String credentialId, Model model, Principal principal) {
         System.out.println("delete Credential: " + credentialId);
         if (!credentialId.isEmpty()) {
-            credentialService.deleteCredential(Integer.valueOf(credentialId));
+            boolean deleteResult = credentialService.deleteCredential(Integer.valueOf(credentialId), principal.getName());
+            if (deleteResult) {
+                model.addAttribute("successMessage", "Credential deleted with success!");
+            }
         }
         model.addAttribute("credentialForm", new CredentialForm());
         model.addAttribute("tabActive", "Credentials");
-        model.addAttribute("credentialList", credentialService.getCredentials());
-        model.addAttribute("noteList", noteService.getNotes());
-        model.addAttribute("fileList", fileService.getFileNames());
+        model.addAttribute("credentialList", credentialService.getCredentials(principal.getName()));
+        model.addAttribute("noteList", noteService.getNotes(principal.getName()));
+        model.addAttribute("fileList", fileService.getFileNames(principal.getName()));
+        model.addAttribute("loggedUsername", principal.getName());
         return "home";
     }
 
     @PostMapping("/deleteNote")
-    public String deleteNote(@RequestParam("note-list-delete-id") String noteId, Model model) {
+    public String deleteNote(@RequestParam("note-list-delete-id") String noteId, Model model, Principal principal) {
         System.out.println("delete Note: " + noteId);
         if (!noteId.isEmpty()) {
-            noteService.deleteNote(Integer.valueOf(noteId));
+            boolean deleteResult = noteService.deleteNote(Integer.valueOf(noteId), principal.getName());
+            if (deleteResult) {
+                model.addAttribute("successMessage", "Note deleted with success!");
+            }
         }
         model.addAttribute("noteForm", new NoteForm());
         model.addAttribute("tabActive", "Notes");
-        model.addAttribute("credentialList", credentialService.getCredentials());
-        model.addAttribute("noteList", noteService.getNotes());
-        model.addAttribute("fileList", fileService.getFileNames());
+        model.addAttribute("credentialList", credentialService.getCredentials(principal.getName()));
+        model.addAttribute("noteList", noteService.getNotes(principal.getName()));
+        model.addAttribute("fileList", fileService.getFileNames(principal.getName()));
+        model.addAttribute("loggedUsername", principal.getName());
         return "home";
     }
 
     @PostMapping("/deleteFile")
-    public String deleteFile(@RequestParam("file-list-delete-id") String fileId, Model model) {
+    public String deleteFile(@RequestParam("file-list-delete-id") String fileId, Model model, Principal principal) {
         System.out.println("delete File: " + fileId);
         if (!fileId.isEmpty()) {
-            fileService.deleteFile(Integer.valueOf(fileId));
+            boolean deleteResult = fileService.deleteFile(Integer.valueOf(fileId), principal.getName());
+            if (deleteResult) {
+                model.addAttribute("successMessage", "File deleted with success!");
+            }
         }
         model.addAttribute("tabActive", "Files");
-        model.addAttribute("credentialList", credentialService.getCredentials());
-        model.addAttribute("noteList", noteService.getNotes());
-        model.addAttribute("fileList", fileService.getFileNames());
+        model.addAttribute("credentialList", credentialService.getCredentials(principal.getName()));
+        model.addAttribute("noteList", noteService.getNotes(principal.getName()));
+        model.addAttribute("fileList", fileService.getFileNames(principal.getName()));
+        model.addAttribute("loggedUsername", principal.getName());
         return "home";
     }
 
     @PostMapping("/downloadFile")
-    public void downloadFile(@RequestParam("file-list-view-id") String fileId, HttpServletResponse response) {
+    public void downloadFile(@RequestParam("file-list-view-id") String fileId, HttpServletResponse response, Principal principal) {
         System.out.println("download File: " + fileId);
         if (!fileId.isEmpty()) {
             try {
                 //get the mimetype
-                String fileName = fileService.getFileName(Integer.valueOf(fileId));
+                String fileName = fileService.getFileName(Integer.valueOf(fileId), principal.getName());
                 String mimeType = URLConnection.guessContentTypeFromName(fileName);
                 if (mimeType == null) {
                     //unknown mimetype so set the mimetype to application/octet-stream
@@ -232,7 +259,7 @@ public class HomeController {
                 //Here we have mentioned it to show as attachment
                 response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + fileName + "\""));
 
-                byte[] fileBinary = fileService.getFileBinary(Integer.valueOf(fileId));
+                byte[] fileBinary = fileService.getFileBinary(Integer.valueOf(fileId), principal.getName());
                 // get file as InputStream
                 InputStream inputStream = new ByteArrayInputStream(fileBinary);
 
@@ -262,17 +289,21 @@ public class HomeController {
 
     @ModelAttribute("fileList")
     public List<FileName> getFileList() {
-        return fileService.getFileNames();
+        return new ArrayList<>();
     }
 
     @ModelAttribute("noteList")
     public List<Note> getNoteList() {
-        return noteService.getNotes();
+        return new ArrayList<>();
     }
 
     @ModelAttribute("credentialList")
     public List<Credential> getCredentialList() {
-        return credentialService.getCredentials();
+        return new ArrayList<>();
     }
 
+    @ModelAttribute("successMessage")
+    public String getSuccessMessage() {
+        return "-1";
+    }
 }

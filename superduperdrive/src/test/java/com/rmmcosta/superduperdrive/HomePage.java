@@ -101,6 +101,9 @@ public class HomePage {
     @FindBy(id = "credential-modal-close")
     private WebElement credentialModalClose;
 
+    @FindBy(id="error-message")
+    private WebElement errorMessage;
+
     private WebDriver driver;
 
     public HomePage(WebDriver driver) {
@@ -108,8 +111,17 @@ public class HomePage {
         this.driver = driver;
     }
 
-    public void createFile(String name, Byte[] binary) {
+    public void uploadFile(String fileName) {
+        fileNew.sendKeys(new java.io.File(fileName).getAbsolutePath());
+        fileUpload.click();
+    }
 
+    public String uploadSameFile(String fileName) {
+        fileNew.sendKeys(new java.io.File(fileName).getAbsolutePath());
+        fileUpload.click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(1));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("error-message")));
+        return errorMessage.getText();
     }
 
     public int getFilesCount() {
@@ -120,11 +132,25 @@ public class HomePage {
         List<File> files = new ArrayList<>();
         File tempFile = new File();
         for (int i = 0; i < fileListName.size(); i++) {
-            tempFile.setFileId(Integer.valueOf(fileListViewId.get(i).getText()));
+            //tempFile.setFileId(Integer.valueOf(fileListViewId.get(i).getText()));
             tempFile.setFileName(fileListName.get(i).getText());
             files.add(tempFile);
         }
         return files;
+    }
+
+    public boolean deleteFile(String fileName) {
+        if (!fileListDelete.isEmpty()) {
+            int i;
+            for (i = 0; i < fileListName.size(); i++) {
+                if (fileListName.get(i).getText().equals(fileName)) {
+                    break;
+                }
+            }
+            fileListDelete.get(i).click();
+            return true;
+        } else
+            return false;
     }
 
     public void createNote(String title, String description) {

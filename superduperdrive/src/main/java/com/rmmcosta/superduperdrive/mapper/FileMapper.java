@@ -8,19 +8,22 @@ import java.util.List;
 
 @Mapper
 public interface FileMapper {
-    @Select("SELECT file_id, file_name FROM files")
-    List<FileName> getFileNames();
+    @Select("SELECT file_id, file_name FROM files WHERE owner_username = #{ownerUsername}")
+    List<FileName> getFileNames(String ownerUsername);
 
-    @Select("SELECT * FROM files WHERE file_id=#{fileId}")
-    File getFileBinary(Integer fileId);
+    @Select("SELECT * FROM files WHERE file_id=#{fileId} and owner_username = #{ownerUsername}")
+    File getFileBinary(Integer fileId, String ownerUsername);
 
-    @Select("SELECT file_name FROM files WHERE file_id=#{fileId}")
-    String getFileName(Integer fileId);
+    @Select("SELECT file_name FROM files WHERE file_id=#{fileId} and owner_username = #{ownerUsername}")
+    String getFileName(Integer fileId, String ownerUsername);
 
-    @Insert("INSERT INTO files(file_name, file_binary) VALUES(#{fileName}, #{fileBinary})")
-    @Options(useGeneratedKeys = true, keyProperty = "fileId")
-    int insertFile(File file);
+    @Select("SELECT file_id, file_name FROM files WHERE file_name = #{fileName} and owner_username = #{ownerUsername}")
+    FileName getFileByName(String fileName, String ownerUsername);
 
-    @Delete("DELETE FROM files WHERE file_id = #{fileId}")
-    boolean deleteFile(Integer fileId);
+    @Insert("INSERT INTO files(file_name, file_binary, owner_username) VALUES(#{file.fileName}, #{file.fileBinary}, #{ownerUsername})")
+    @Options(useGeneratedKeys = true, keyProperty = "file.fileId")
+    int insertFile(File file, String ownerUsername);
+
+    @Delete("DELETE FROM files WHERE file_id = #{fileId} and owner_username = #{ownerUsername}")
+    boolean deleteFile(Integer fileId, String ownerUsername);
 }

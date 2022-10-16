@@ -63,3 +63,36 @@
   color: black;
   font-weight: bold;
 }
+
+.btn {
+  border: 0px;
+  font-weight: 500;
+  color: black;
+  background-color: transparent;
+  text-decoration: underline 0.05em #d3d3d3db;
+  text-underline-offset: 0.2em;
+  border-radius: 0px;
+  transition: text-decoration-color 300ms, text-underline-offset 300ms;
+}
+
+.btn:hover, .btn:focus, .btn:active {
+  font-weight: bold;
+  background-color: transparent!important;
+  color: black!important;
+  text-decoration-color: black;
+  text-underline-offset: 0.4em;
+  text-decoration-thickness: 0.15em;
+}
+
+table tr{
+  border-left: 2px solid black;
+}
+
+table thead {
+  border-bottom: 2px solid black;
+}
+
+.table-striped>tbody>tr:nth-of-type(odd)>.list-placeholder {
+  --bs-table-accent-bg: white;
+  border: none;
+}

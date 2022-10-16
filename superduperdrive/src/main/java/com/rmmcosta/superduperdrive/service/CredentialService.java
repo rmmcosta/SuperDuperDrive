@@ -23,36 +23,36 @@ public class CredentialService {
         key = encryptionService.generateSymmetricKey();
     }
 
-    public List<Credential> getCredentials() {
-        return credentialMapper.getCredentials();
+    public List<Credential> getCredentials(String ownerUsername) {
+        return credentialMapper.getCredentials(ownerUsername);
     }
 
-    public Credential getCredentialById(Integer credentialId) {
-        Credential tempCredential = credentialMapper.getCredentialById(credentialId);
+    public Credential getCredentialById(Integer credentialId, String ownerUsername) {
+        Credential tempCredential = credentialMapper.getCredentialById(credentialId, ownerUsername);
         if (tempCredential != null)
             tempCredential.setPassword(encryptionService.decrypt(tempCredential.getPassword(), key));
         return tempCredential;
     }
 
-    public int insertCredential(Credential credential) {
-        checkExistingCredential(credential);
+    public int insertCredential(Credential credential, String ownerUsername) {
+        checkExistingCredential(credential, ownerUsername);
         credential.setPassword(encryptionService.encrypt(credential.getPassword(), key));
         System.out.println("Credential before insert: " + credential);
-        return credentialMapper.insertCredential(credential);
+        return credentialMapper.insertCredential(credential, ownerUsername);
     }
 
-    public boolean deleteCredential(Integer credentialId) {
-        return credentialMapper.deleteCredential(credentialId);
+    public boolean deleteCredential(Integer credentialId, String ownerUsername) {
+        return credentialMapper.deleteCredential(credentialId, ownerUsername);
     }
 
-    public boolean updateCredential(Credential credential) {
-        checkExistingCredential(credential);
+    public boolean updateCredential(Credential credential, String ownerUsername) {
+        checkExistingCredential(credential, ownerUsername);
         credential.setPassword(encryptionService.encrypt(credential.getPassword(), key));
-        return credentialMapper.updateCredential(credential);
+        return credentialMapper.updateCredential(credential, ownerUsername);
     }
 
-    private void checkExistingCredential(Credential credential) {
-        Credential existingCredential = credentialMapper.getCredentialByUrlAndUsername(credential.getUrl(), credential.getUsername());
+    private void checkExistingCredential(Credential credential, String ownerUsername) {
+        Credential existingCredential = credentialMapper.getCredentialByUrlAndUsername(credential.getUrl(), credential.getUsername(), ownerUsername);
         if (existingCredential != null && (credential.getCredentialId() == null || existingCredential.getCredentialId() != credential.getCredentialId())) {
             throw new RuntimeException("Credential already exists with that Url and Username!");
         }

@@ -8,10 +8,13 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.io.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class CredentialsEnd2EndTests {
+public class FilesEnd2EndTests {
     @LocalServerPort
     private Integer port;
 
@@ -22,15 +25,10 @@ public class CredentialsEnd2EndTests {
     private SignupPage signupPage;
     private HomePage homePage;
 
-    private static final String USERNAME = "rmmcosta_credentials";
+    private static final String USERNAME = "rmmcosta_files";
     private static final String PASSWORD = "12345";
     private static final String F_NAME = "Ricardo";
     private static final String L_NAME = "Costa";
-    private static final String URL = "http://localhost:8080/chat";
-
-    private static final String NEW_USERNAME = "rmmcosta11";
-    private static final String NEW_PASSWORD = "123451";
-    private static final String NEW_URL = "http://localhost:8080/chat1";
 
     @BeforeAll
     public static void initializeWebDriver() {
@@ -70,24 +68,19 @@ public class CredentialsEnd2EndTests {
     }
 
     @Test
-    public void credentialCreateEditDelete() {
+    public void fileUploadDownloadDelete() {
         assertEquals(DOMAIN + port + "/home", driver.getCurrentUrl());
-        int initialCredentialsCount = homePage.getCredentialsCount();
-        homePage.createCredential(URL, USERNAME, PASSWORD);
-        assertEquals(initialCredentialsCount + 1, homePage.getCredentialsCount());
-        boolean foundMatchingCredential;
-        foundMatchingCredential = homePage.getCredentials().stream().filter(credential -> credential.getUrl().equals(URL) && credential.getUsername().equals(USERNAME)).count() == 1;
-        assertTrue(foundMatchingCredential);
-        //let's try to create a credential with the same url and username and assert if an error message is displayed in the screen
-        assertEquals(homePage.createSameCredential(URL, USERNAME, ""), "Credential already exists with that Url and Username!");
-        homePage.closeCredentialModal();
-        homePage.updateCredential(URL, NEW_URL, NEW_USERNAME, NEW_PASSWORD);
-        foundMatchingCredential = homePage.getCredentials().stream().filter(credential -> credential.getUrl().equals(NEW_URL) && credential.getUsername().equals(NEW_USERNAME)).count() == 1;
-        assertTrue(foundMatchingCredential);
-        //now let's see if the old credential was gone
-        foundMatchingCredential = homePage.getCredentials().stream().filter(credential -> credential.getUrl().equals(URL) && credential.getUsername().equals(USERNAME)).count() == 0;
-        assertTrue(foundMatchingCredential);//doesn't matter which credential we are deleting. We just want to make sure that the delete works.
-        assertTrue(homePage.deleteCredential(NEW_URL, NEW_USERNAME));
-        assertEquals(initialCredentialsCount, homePage.getCredentialsCount());
+        int initialFilesCount = homePage.getFilesCount();
+        homePage.uploadFile("src/test/resources/dummy.png");
+        assertEquals(initialFilesCount + 1, homePage.getFilesCount());
+        boolean foundMatchingFile;
+        foundMatchingFile = homePage.getFiles().stream().filter(file -> file.getFileName().equals("dummy.png")).count() == 1;
+        assertTrue(foundMatchingFile);
+        //let's try to create a file with the same name and assert if an error message is displayed in the screen
+        assertEquals(homePage.uploadSameFile("src/test/resources/dummy.png"), "File already exists with that name!");
+        assertTrue(homePage.deleteFile("dummy.png"));
+        assertEquals(initialFilesCount, homePage.getFilesCount());
+        foundMatchingFile = homePage.getFiles().stream().filter(file -> file.getFileName().equals("dummy.png")).count() == 0;
+        assertTrue(foundMatchingFile);
     }
 }

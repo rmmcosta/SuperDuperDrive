@@ -19,22 +19,23 @@ public class CredentialServiceTests {
         credential.setUrl("http://localhost");
         credential.setUsername("aramos");
         credential.setPassword("p@ssw0rd");
-        int initCount = credentialService.getCredentials().size();
-        int insertedCredentialId = credentialService.insertCredential(credential);
-        assertEquals(initCount + 1, credentialService.getCredentials().size());
-        Credential returnedCredential = credentialService.getCredentialById(insertedCredentialId);
+        String authUsername = "user1";
+        int initCount = credentialService.getCredentials(authUsername).size();
+        int insertedCredentialId = credentialService.insertCredential(credential, authUsername);
+        assertEquals(initCount + 1, credentialService.getCredentials(authUsername).size());
+        Credential returnedCredential = credentialService.getCredentialById(insertedCredentialId, authUsername);
         assertNotNull(returnedCredential);
         assertEquals("p@ssw0rd", returnedCredential.getPassword());
         Credential newSameUrlUsernameCredential = new Credential();
         newSameUrlUsernameCredential.setUrl("http://localhost");
         newSameUrlUsernameCredential.setUsername("aramos");
-        assertThrows(RuntimeException.class, () -> {
-            credentialService.insertCredential(newSameUrlUsernameCredential);
+        assertThrowsExactly(RuntimeException.class, () -> {
+            credentialService.insertCredential(newSameUrlUsernameCredential, authUsername);
         }, "Credential already exists with that Url and Username!");
-        Credential insertedCredentialFromList = credentialService.getCredentials().stream().filter(c -> c.getCredentialId() == insertedCredentialId).toList().get(0);
+        Credential insertedCredentialFromList = credentialService.getCredentials(authUsername).stream().filter(c -> c.getCredentialId() == insertedCredentialId).toList().get(0);
         assertEquals(insertedCredentialId, insertedCredentialFromList.getCredentialId());
-        assertTrue(credentialService.deleteCredential(insertedCredentialId));
-        assertEquals(initCount, credentialService.getCredentials().size());
-        assertNull(credentialService.getCredentialById(insertedCredentialId));
+        assertTrue(credentialService.deleteCredential(insertedCredentialId, authUsername));
+        assertEquals(initCount, credentialService.getCredentials(authUsername).size());
+        assertNull(credentialService.getCredentialById(insertedCredentialId, authUsername));
     }
 }

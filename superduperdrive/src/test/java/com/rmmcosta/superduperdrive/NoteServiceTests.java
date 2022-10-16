@@ -18,19 +18,20 @@ public class NoteServiceTests {
         Note note = new Note();
         note.setTitle("xpto");
         note.setDescription("any description will due");
-        int initCount = noteService.getNotes().size();
-        int insertedNoteId = noteService.insertNote(note);
-        assertEquals(initCount + 1, noteService.getNotes().size());
-        assertNotNull(noteService.getNoteById(insertedNoteId));
+        String authUsername = "user1";
+        int initCount = noteService.getNotes(authUsername).size();
+        int insertedNoteId = noteService.insertNote(note, authUsername);
+        assertEquals(initCount + 1, noteService.getNotes(authUsername).size());
+        assertNotNull(noteService.getNoteById(insertedNoteId, authUsername));
         Note newSameTitleNote = new Note();
         newSameTitleNote.setTitle("xpto");
-        assertThrows(RuntimeException.class, () -> {
-            noteService.insertNote(newSameTitleNote);
+        assertThrowsExactly(RuntimeException.class, () -> {
+            noteService.insertNote(newSameTitleNote, authUsername);
         }, "Note already exists with that title!");
-        Note insertedNoteFromList = noteService.getNotes().stream().filter(n -> n.getNoteId() == insertedNoteId).toList().get(0);
+        Note insertedNoteFromList = noteService.getNotes(authUsername).stream().filter(n -> n.getNoteId() == insertedNoteId).toList().get(0);
         assertEquals(insertedNoteId, insertedNoteFromList.getNoteId());
-        assertTrue(noteService.deleteNote(insertedNoteId));
-        assertEquals(initCount, noteService.getNotes().size());
-        assertNull(noteService.getNoteById(insertedNoteId));
+        assertTrue(noteService.deleteNote(insertedNoteId, authUsername));
+        assertEquals(initCount, noteService.getNotes(authUsername).size());
+        assertNull(noteService.getNoteById(insertedNoteId, authUsername));
     }
 }

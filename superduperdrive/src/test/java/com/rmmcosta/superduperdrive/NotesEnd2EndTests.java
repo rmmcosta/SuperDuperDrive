@@ -22,7 +22,7 @@ public class NotesEnd2EndTests {
     private SignupPage signupPage;
     private HomePage homePage;
 
-    private static final String USERNAME = "rmmcosta1";
+    private static final String USERNAME = "rmmcosta_notes";
     private static final String PASSWORD = "12345";
     private static final String F_NAME = "Ricardo";
     private static final String L_NAME = "Costa";
@@ -87,7 +87,7 @@ public class NotesEnd2EndTests {
         //now let's see if the old note was gone
         foundMatchingNote = homePage.getNotes().stream().filter(note -> note.getTitle().equals(NOTE_TITLE) && note.getDescription().equals(NOTE_DESCRIPTION)).count() == 0;
         assertTrue(foundMatchingNote);
-        homePage.deleteNote(NEW_NOTE_TITLE);
+        assertTrue(homePage.deleteNote(NEW_NOTE_TITLE));
         assertEquals(initialNotesCount, homePage.getNotesCount());
         foundMatchingNote = homePage.getNotes().stream().filter(note -> note.getTitle().equals(NEW_NOTE_TITLE) && note.getDescription().equals(NEW_NOTE_DESCRIPTION)).count() == 0;
         assertTrue(foundMatchingNote);
