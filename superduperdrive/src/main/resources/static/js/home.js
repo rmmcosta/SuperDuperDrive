@@ -12,13 +12,17 @@ window.addEventListener('load', (event) => {
   var alertNode = document.querySelector('.alert')
   if (alertNode !== null) {
     setTimeout(
-      () => { 
+      () => {
         let successAlert = document.getElementById('success-alert');
-        let bsSuccessAlert = new bootstrap.Alert(successAlert);
-        bsSuccessAlert.close();
+        if (successAlert !== null) {
+          let bsSuccessAlert = new bootstrap.Alert(successAlert);
+          bsSuccessAlert.close();
+        }
         let errorAlert = document.getElementById('error-alert');
-        let bsErrorAlert = new bootstrap.Alert(errorAlert);
-        bsErrorAlert.close();
+        if (errorAlert !== null) {
+          let bsErrorAlert = new bootstrap.Alert(errorAlert);
+          bsErrorAlert.close();
+        }
       },
       3000
     );
